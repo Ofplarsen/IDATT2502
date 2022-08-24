@@ -17,7 +17,7 @@ class LinearRegressionModel:
         return torch.mean(torch.square(self.f(x) - y))
 
 
-def oppg1():
+def oppg2():
     path = "resources/length_weight.csv"
     data = pd.read_csv(path, delimiter=',', header=None, names=['length', 'weight'])
 
@@ -34,7 +34,7 @@ def oppg1():
     y_train = torch.tensor(y_data).reshape(-1, 1)
 
     model = LinearRegressionModel()
-    n = 1000000
+    n = 100000
     lr = 0.0001
     p = 1000
     # Optimizer W, b, and learning rate
@@ -57,6 +57,6 @@ def oppg1():
     plt.ylabel('Weight')
     x = torch.tensor([[torch.min(x_train)], [torch.max(x_train)]])
     plt.plot(x, model.f(x).detach(), label='$\\hat y = f(x) = xW+b$')
-    plt.gcf().text(0.15, 0.93,"n: " + str(n) + ", lr: " + str(lr) + ", loss: " + str(model.loss(x_train,y_train)))
+    plt.gcf().text(0.15, 0.93,"n: " + str(n) + ", lr: " + str(lr) + ", loss: " + str(model.loss(x_train,y_train).data))
     plt.legend()
     plt.show()
