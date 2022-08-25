@@ -31,7 +31,7 @@ y_train = torch.tensor(y_train.to_numpy(), dtype=torch.float).reshape(-1, 1)
 
 
 model = NotLinearRegressionModel()
-n = 100000
+n = 1000000
 lr = 0.000001
 p = 1000
 # Optimizer W, b, and learning rate
@@ -53,7 +53,7 @@ plt.plot(x_train, y_train, 'o', label='$(x^{(i)},y^{(i)})$')
 plt.xlabel('Day')
 plt.ylabel('head circumference')
 x = torch.arange(torch.min(x_train), torch.max(x_train), 1.0).reshape(-1, 1)
-plt.plot(x, model.f(x).detach(), label='$\\hat y = f(x) = xW+b$')
-plt.gcf().text(0.15, 0.93,"n: " + str(n) + ", lr: " + str(lr) + ", loss: " + str(model.loss(x_train,y_train)))
+plt.plot(x, model.f(x).detach(), label='y = f(x) = 1 / (1 + np.exp(-z))')
+plt.gcf().text(0.15, 0.93,"n: " + str(n) + ", lr: " + str(lr) + ", loss: " + str(model.loss(x_train,y_train).data))
 plt.legend()
 plt.show()
