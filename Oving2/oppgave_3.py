@@ -6,10 +6,18 @@ import tqdm
 x_train = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float).reshape(-1,2)
 y_train = torch.tensor([[0], [1], [1], [0]], dtype=torch.float)
 
-W1_init = torch.tensor(torch.rand(2, 2), requires_grad=True)
-b1_init =  torch.tensor(torch.rand(1, 2), requires_grad=True)
-W2_init =  torch.tensor(torch.rand(2, 1), requires_grad=True)
-b2_init =  torch.tensor(torch.rand(1, 1), requires_grad=True)
+converge = True
+if converge:
+    W1_init = torch.tensor([[10.0, -10.0], [10.0, -10.0]], requires_grad=True)
+    b1_init = torch.tensor([[-5.0, 15.0]], requires_grad=True)
+    W2_init = torch.tensor([[10.0], [10.0]], requires_grad=True)
+    b2_init = torch.tensor([[-15.0]], requires_grad=True)
+else:
+    W1_init = torch.tensor(torch.rand(2, 2), requires_grad=True)
+    b1_init =  torch.tensor(torch.rand(1, 2), requires_grad=True)
+    W2_init =  torch.tensor(torch.rand(2, 1), requires_grad=True)
+    b2_init =  torch.tensor(torch.rand(1, 1), requires_grad=True)
+
 
 
 class XOROperator:
@@ -39,7 +47,7 @@ class XOROperator:
 
 model = XOROperator()
 
-n = 2500000
+n = 250000
 lr = 0.1
 p = 100000
 # Optimizer W, b, and learning rate
