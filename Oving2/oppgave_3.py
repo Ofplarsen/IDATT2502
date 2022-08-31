@@ -3,48 +3,61 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
 
-x_train = torch.tensor([[0, 0], [0, 1], [1, 0], [1,1]], dtype=torch.float).reshape(-1,2)
-y_train = torch.tensor([[1], [1], [1], [0]], dtype=torch.float)
+x_train = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float).reshape(-1,2)
+y_train = torch.tensor([[0], [1], [1], [0]], dtype=torch.float)
 
-class NANDOperator:
+W1_init = torch.tensor(torch.rand(2, 2), requires_grad=True)
+b1_init =  torch.tensor(torch.rand(1, 2), requires_grad=True)
+W2_init =  torch.tensor(torch.rand(2, 1), requires_grad=True)
+b2_init =  torch.tensor(torch.rand(1, 1), requires_grad=True)
 
-    def __init__(self):
-        self.W = torch.tensor(torch.rand(2, 1), requires_grad=True)
-        self.b = torch.tensor(torch.rand(1, 1), requires_grad=True)
+
+class XOROperator:
+
+    def __init__(self, W1=W1_init, W2=W2_init, b1=b1_init, b2=b2_init):
+        self.W1 = W1
+        self.W2 = W2
+        self.b1 = b1
+        self.b2 = b2
 
     # Predictor
-    def f(self, x):
-        return torch.sigmoid(self.logits(x))
+    def f1(self, x):
+        return torch.sigmoid(self.logits(x, self.W1, self.b1))
 
-    def logits(self, x):
-        return x @ self.W + self.b
+    def f2(self, h):
+        return torch.sigmoid(self.logits(h, self.W2, self.b2))
+
+    def f(self, x):
+        return self.f2(self.f1(x))
+
+    def logits(self, x, W, b):
+        return x @ W + b
 
     def loss(self, x, y):
-        return torch.nn.functional.binary_cross_entropy_with_logits(self.logits(x), y)
+        return torch.nn.functional.binary_cross_entropy_with_logits(self.f(x), y)
 
 
-model = NANDOperator()
+model = XOROperator()
 
-n = 1000000
-lr = 0.0001
+n = 2500000
+lr = 0.1
 p = 100000
 # Optimizer W, b, and learning rate
-optimizer = torch.optim.SGD([model.W, model.b], lr)
+optimizer = torch.optim.SGD([model.W2, model.b2, model.W1, model.b1], lr)
 
 for epoch in tqdm.tqdm(range(n)):
     model.loss(x_train, y_train).backward()  # Computes loss gradients
     if epoch % p == 0:
-        print("W = %s, b = %s, loss = %s" % (model.W.data, model.b.data, model.loss(x_train, y_train).data))
+        print("W1 = %s, b1 = %s, W2 = %s, b2 = %s, loss = %s" % (model.W1.data, model.b1.data, model.W2.data, model.b2.data, model.loss(x_train, y_train).data))
     optimizer.step()  # Adjusts W and /or b
     optimizer.zero_grad() #Clears gradients for next step
 
-print("W = %s, b = %s, loss = %s" % (model.W.data, model.b.data, model.loss(x_train, y_train).data))
-
+print("W1 = %s, b1 = %s, W2 = %s, b2 = %s, loss = %s" % (model.W1.data, model.b1.data, model.W2.data, model.b2.data, model.loss(x_train, y_train).data))
 
 xt =x_train.t()[0]
 yt =x_train.t()[1]
 
-fig = plt.figure("Logistic regression: the logical NAND")
+fig = plt.figure("Logistic regression: the logical Xor")
 
 plot1 = fig.add_subplot(111, projection='3d')
 
@@ -65,7 +78,7 @@ plot1.set_xlim(-0.25, 1.25)
 plot1.set_ylim(-0.25, 1.25)
 plot1.set_zlim(-0.25, 1.25)
 
-table = plt.table(cellText=[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 0]],
+table = plt.table(cellText=[[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]],
                   colWidths=[0.1] * 3,
                   colLabels=["$x_1$", "$x_2$", "$f(\\mathbf{x})$"],
                   cellLoc="center",
