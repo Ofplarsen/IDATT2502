@@ -47,8 +47,8 @@ class HandWrittenNumbers:
 
 model = HandWrittenNumbers()
 
-n = 2000
-lr = 1
+n = 1000
+lr = 0.5
 p = 100
 # Optimizer W, b, and learning rate
 optimizer = torch.optim.SGD([model.W, model.b], lr)
