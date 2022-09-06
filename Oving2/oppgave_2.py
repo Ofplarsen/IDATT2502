@@ -25,8 +25,8 @@ class NANDOperator:
 
 model = NANDOperator()
 
-n = 1000000
-lr = 0.0001
+n = 100000
+lr = 0.1
 p = 100000
 # Optimizer W, b, and learning rate
 optimizer = torch.optim.SGD([model.W, model.b], lr)
