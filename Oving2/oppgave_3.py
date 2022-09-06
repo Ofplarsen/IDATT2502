@@ -6,7 +6,7 @@ import tqdm
 x_train = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float).reshape(-1,2)
 y_train = torch.tensor([[0], [1], [1], [0]], dtype=torch.float)
 
-converge = True
+converge = False
 if converge:
     W1_init = torch.tensor([[10.0, -10.0], [10.0, -10.0]], requires_grad=True)
     b1_init = torch.tensor([[-5.0, 15.0]], requires_grad=True)
