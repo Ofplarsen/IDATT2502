@@ -18,7 +18,7 @@ def drawGrid(screen, color, goal, user, q_table):
                 temp[0] = 255
                 temp[1] = 255 - int(20 * q_val)
                 temp[2] = 0
-                print(tuple(temp))
+                #print(tuple(temp))
                 pygame.draw.rect(screen, tuple(temp), rect)
 
             if (x, y) == tuple(np.multiply(goal, blockSize)):
