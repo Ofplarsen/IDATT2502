@@ -40,7 +40,7 @@ class Environment:
         # Goal is in (0,0)
         self.goal = np.array([0, 0])
         self.reset()
-        self.init_rewards()
+        #self.init_rewards()
 
 
     # One of two needed for env
