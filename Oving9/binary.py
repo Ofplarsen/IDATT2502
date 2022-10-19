@@ -7,7 +7,7 @@ import numpy as np
 @dataclass
 class Gen:
     best_fitness: int
-    avg_fitness: int
+    avg_fitness: float
 
     def __init__(self, best, avg):
         self.best_fitness = best
@@ -55,15 +55,16 @@ class Evolution():
 
     def train(self):
         i = 0
+        fs = []
         while True:
 
             fitnesses = [self.fitness(x) for x in self.generations[i]]
-            print("Gen {}")
+            fs.append(fitnesses)
             # Pick 5 best numbers
             gen = sorted(zip(fitnesses, self.generations[i]), reverse=True)[:5]
             if max(fitnesses) == 0:
                 print(self.generations)
-                return gen
+                return [Gen(max(f), sum(f)/len(f)) for f in fs], self.generations
 
             new_gen = self.get_new_gen(gen)
             print(new_gen)
@@ -72,8 +73,18 @@ class Evolution():
             i += 1
 
 
+def print_gens(gen, best, avg, i):
+    print(f"Gen {i}: ")
+    print(gen)
+    print(f"Best Fitness: {best}")
+    print(f"Avg Fitness: {avg}")
+    print("")
+
 evo = Evolution()
 
-print(evo.target)
+gen, gens = evo.train()
 
-print(evo.train())
+for i in range(len(gens)):
+    print_gens(gens[i], gen[i].best_fitness, gen[i].avg_fitness, i)
+
+print(f"Target: {evo.target}")
