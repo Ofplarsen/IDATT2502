@@ -16,8 +16,9 @@ class Gen:
 
 
 class Evolution():
-    def __init__(self, max = 256, size=10):
+    def __init__(self, max = 256, size=10, base = 8):
         self.size = size
+        self.base = base
         self.max = max
         self.generations = []
         self.start_gen = np.random.randint(0, max, size=size)
@@ -25,13 +26,36 @@ class Evolution():
         self.target = np.random.randint(0, max)
 
     def mutation(self, x: int):
-        rnd_int = np.random.randint(0, self.max)
-        return x ^ rnd_int
+        start = np.random.randint(0, math.floor(self.base/2))
+        end = np.random.randint(start, math.floor(self.base))
+        x_str = str(bin(x))[2:]
+
+        if len(x_str) != self.base:
+            for i in range(self.base-len(x_str)):
+                x_str = '0' + x_str
+
+        x_str = list(x_str)
+        for i in range(start, end):
+            x_str[i] = '1' if x_str[i] == '0' else '0'
+
+        return int(''.join(x_str), 2)
 
     def combine(self, x, y):
-        floor = np.random.randint(0, 2)
+        rnd = np.random.randint(0, 2)
+        x_str = str(bin(x if rnd == 0 else y))[2:]
+        y_str = str(bin(x if rnd == 1 else y))[2:]
+        n = 0
+        if len(x_str) % 2 == 0:
+            n = len(x_str) / 2
+        else:
+            if self.fitness(x if rnd == 0 else y) > self.fitness(x if rnd == 1 else y):
+                n = math.ceil(len(x_str) / 2)
+            else:
+                n = math.floor(len(x_str) / 2)
 
-        return math.floor((x + y) / 2) if floor == 1 else math.ceil((x + y) / 3)
+        n = int(n)
+        child = x_str[:n]+y_str[n:]
+        return int(child, 2)
 
     def fitness(self, x: int):
         return -np.abs(x - self.target)
@@ -39,19 +63,27 @@ class Evolution():
     def get_new_combination(self, gen: zip):
         new_gen = []
         t = 0
+        best = 0
+        second = 0
+
+        for i in range(len(gen)):
+            if best > gen[i][0] > second != gen[i][1]:
+                second = gen[i][1]
+
+            if gen[i][0] > best != gen[i][1]:
+                second = best
+                best = gen[i][1]
+
         for i in gen:
-            for y in gen:
-                if t == 2:
-                    t = 0
-                    break
-                new_gen.append(self.combine(i[1], y[1]))
-                t += 1
+            new_gen.append(self.combine(i[1], best))
+            new_gen.append(self.combine(i[1], second))
+
         return new_gen
 
     def get_new_gen(self, old_gen):
         new_gen = self.get_new_combination(old_gen)
 
-        for i in np.random.randint(0, self.size, size=math.floor(self.size/3)):
+        for i in np.random.randint(0, self.size, size=math.floor(self.size/2)):
             new_gen[i] = self.mutation(new_gen[i])
 
         return new_gen
@@ -70,7 +102,8 @@ class Evolution():
                 return [Gen(max(f), sum(f)/len(f)) for f in fs], self.generations
 
             new_gen = self.get_new_gen(gen)
-            print(new_gen)
+            #print(new_gen)
+            #print(self.target)
             self.generations.append(new_gen)
 
             i += 1
@@ -118,11 +151,11 @@ def task_1_1():
     print(f"Target: {evo.target}")
 
 def task_1_2():
-    n = np.arange(8, 20)
+    n = np.arange(8, 18)
     time  = []
 
-    for i in range(8, 20):
-        evo = Evolution(2**i, 10)
+    for i in range(8, 18):
+        evo = Evolution(2**i, 20, i)
         time.append(evo.train_time())
         print(f"Done with: {2**i}")
         print(f"Target: {evo.target}")
