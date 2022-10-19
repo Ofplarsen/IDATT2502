@@ -79,7 +79,7 @@ class Evolution():
         i = 0
         sts = []
 
-        for t in range(3):
+        for t in range(20):
             print(i)
             st = time.time()
             while True:
@@ -91,7 +91,7 @@ class Evolution():
                     et = time.time()
                     sts.append(et-st)
                     break
-                print(gen)
+                #print(gen)
                 new_gen = self.get_new_gen(gen)
                 self.generations.append(new_gen)
 
@@ -118,16 +118,16 @@ def task_1_1():
     print(f"Target: {evo.target}")
 
 def task_1_2():
-    n = np.arange(8, 19)
+    n = np.arange(8, 20)
     time  = []
 
-    for i in range(8, 19):
+    for i in range(8, 20):
         evo = Evolution(2**i, 10)
         time.append(evo.train_time())
         print(f"Done with: {2**i}")
-    print(len(time))
-    print(len(n))
-
+        print(f"Target: {evo.target}")
+    plt.xlabel("Bit length")
+    plt.ylabel("Time (s)")
     plt.plot(n, time)
     plt.show()
 
